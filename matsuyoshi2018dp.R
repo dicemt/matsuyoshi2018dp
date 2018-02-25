@@ -86,7 +86,7 @@ def.par <- par(no.readonly = TRUE)
 plot(DP2018$PIDP,DP2018$HKDP,xlab="", ylab="",col="#00000022",
      xlim=c(0,100),ylim=c(0,50),xaxs="i",yaxs="i",pch=19,las=1)
 abline(int,slp,col=4)
-text(18,30,sprintf("N = %d",DP.s[1,2]),font=1)
+text(18,30,sprintf("N = %d",nrow(DP2018)),font=1)
 mtext(text=expression(paste(bold("PI20"))), side=1, font=2, line=3)
 mtext(text=expression(paste(bold("HK11"))), side=2, font=2, line=3)
 
@@ -105,12 +105,12 @@ om.PI$alpha
 om.PI$omega.tot
 
 diff.alpha <- cocron::cocron.two.coefficients(c(om.HK$alpha,om.PI$alpha),
-                                              n=dim(DP2018)[1], dep = TRUE, r = pearscor$estimate, los = 0.05, alternative = "two.sided")
+                                              n=nrow(DP2018), dep = TRUE, r = pearscor$estimate, los = 0.05, alternative = "two.sided")
 diff.alpha.p <- 2*pt(-abs(diff.alpha@statistic),df=diff.alpha@df)
 diff.alpha
 sprintf("%g",diff.alpha.p)
 diff.omega <- cocron::cocron.two.coefficients(c(om.HK$omega.tot,om.PI$omega.tot),
-                                              n=dim(DP2018)[1], dep = TRUE, r = pearscor$estimate, los = 0.05, alternative = "two.sided")
+                                              n=nrow(DP2018), dep = TRUE, r = pearscor$estimate, los = 0.05, alternative = "two.sided")
 diff.omega.p <- 2*pt(-abs(diff.omega@statistic),df=diff.omega@df)
 diff.omega
 sprintf("%g",diff.omega.p)
@@ -118,8 +118,8 @@ sprintf("%g",diff.omega.p)
 ## Brute-force calculation of subsets' reliability coefficients----
 Mat <- combn(1:20,11)
 R <- choose(20,11)
-a <- matrix(0,R,1)
-o <- matrix(0,R,1)
+al <- matrix(0,R,1)
+o.tot <- matrix(0,R,1)
 
 for (i in 1:R) {
   poly11 <- pcor.PI$rho[c(Mat[,i]),c(Mat[,i])]
@@ -136,11 +136,11 @@ psych::describe(o.tot) %>% print(digits=4)
 
 ## CI bootstrap with bca----
 source("ci.reliability2.R",encoding="UTF-8")
-rel.hk.a.bca <- ci.reliability2(data = dplyr::select(DP2018,c(HK1:HK9,HK14:HK15)), N = dim(DP2018)[1], type = "alpha",
+rel.hk.a.bca <- ci.reliability2(data = dplyr::select(DP2018,c(HK1:HK9,HK14:HK15)), N = nrow(DP2018), type = "alpha",
                                 interval.type = "bca", B = 10000, conf.level = 0.95) 
-rel.hk.ot.bca <- ci.reliability2(data = dplyr::select(DP2018,c(HK1:HK9,HK14:HK15)), N = dim(DP2018)[1], type = "omega",
+rel.hk.ot.bca <- ci.reliability2(data = dplyr::select(DP2018,c(HK1:HK9,HK14:HK15)), N = nrow(DP2018), type = "omega",
                                  interval.type = "bca", B = 10000, conf.level = 0.95) 
-rel.pi.a.bca <- ci.reliability2(data = dplyr::select(DP2018,PI1:PI20), N = dim(DP2018)[1], type = "alpha",
+rel.pi.a.bca <- ci.reliability2(data = dplyr::select(DP2018,PI1:PI20), N = nrow(DP2018), type = "alpha",
                                 interval.type = "bca", B = 10000, conf.level = 0.95) 
-rel.pi.ot.bca <- ci.reliability2(data = dplyr::select(DP2018,PI1:PI20), N = dim(DP2018)[1], type = "omega",
+rel.pi.ot.bca <- ci.reliability2(data = dplyr::select(DP2018,PI1:PI20), N = nrow(DP2018), type = "omega",
                                  interval.type = "bca", B = 10000, conf.level = 0.95) 

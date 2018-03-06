@@ -10,4 +10,5 @@
 
 - R
 
-(doi badge around here)
+[![DOI](https://zenodo.org/badge/121593923.svg)](https://zenodo.org/badge/latestdoi/121593923)
+
